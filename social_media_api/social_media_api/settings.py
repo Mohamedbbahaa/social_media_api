@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-import os
+import os, sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,7 +27,9 @@ SECRET_KEY = 'django-insecure-i2jz&2lak#$r1un$fre!evyps)7efq@d7!g@j=hys+&!xlt=f&
 DEBUG = False
 
 ALLOWED_HOSTS = [
-
+    'localhost',
+    '127.0.0.1',
+    'Mohamedbbahaa.pythonanywhere.com',
 ]
 
 
@@ -46,25 +48,25 @@ INSTALLED_APPS = [
     'posts',
     'notifications',
     'corsheaders',
+    'djoser',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:8000/",
-    "http://localhost:8000/",
-    "http://sub.example.com/",
-    "http://example.com/",
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+    "http://sub.example.com",
+    "http://example.com",
 ]
 
 ROOT_URLCONF = 'social_media_api.urls'
@@ -102,6 +104,12 @@ DATABASES = {
     }
 }
 
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': ':memory:',
+    }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -138,7 +146,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -150,9 +161,14 @@ AUTH_USER_MODEL = 'accounts.User'
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
 }
 
-SECURE_SSL_REDIRECT = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_BROWSER_XSS_FILTER = True
-X_FRAME_OPTIONS = 'DENY'
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+SECURE_SSL_REDIRECT = False
+SECURE_HSTS_SECONDS = 0

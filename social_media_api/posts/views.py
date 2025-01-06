@@ -39,6 +39,8 @@ class PostViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['title', 'content']
+    ordering_fields = ['timestamp', 'likes_count']
+    ordering = ['-timestamp']
 
 
     def perform_create(self, serializer):

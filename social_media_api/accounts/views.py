@@ -10,6 +10,8 @@ from django.contrib.auth import logout
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from notifications.models import Notification
+from .permissions import IsOwnerOrReadOnly
+
 # Create your views here.
 
 class RegisterView(APIView):
@@ -40,6 +42,13 @@ class ProfileView(APIView):
         user = request.user
         serializer = UserSerializer(user)
         return Response(serializer.data)
+    def put(self, request):
+        user = request.user
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LogoutView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -83,3 +92,16 @@ class UnfollowUser(APIView):
                 return Response({"detail": "You cannot unfollow yourself."}, status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
             return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+class UserListCreateView(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+
+    def get_queryset(self):
+        return self.queryset.filter(id=self.request.user.id)

@@ -27,6 +27,22 @@ class UserSerializer(serializers.ModelSerializer):
         
         return user
     
+    def update(self, instance, validated_data):
+        # Use the update_user method for secure user updates
+        user = get_user_model().objects.update_user(
+            instance=instance,
+            username=validated_data.get('username', instance.username),
+            email=validated_data.get('email', instance.email),
+            password=validated_data.get('password', instance.password)
+        )
+        
+        # Update any additional fields (e.g., bio, profile_picture)
+        user.bio = validated_data.get('bio', instance.bio)
+        user.profile_picture = validated_data.get('profile_picture', instance.profile_picture)
+        user.save()
+        
+        return user
+    
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
