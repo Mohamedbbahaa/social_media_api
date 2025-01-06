@@ -1,0 +1,163 @@
+Social Media API
+
+Overview
+
+This is a Django-based API for a social media application. The project includes a custom user model with additional fields and implements token-based authentication using Django REST Framework.
+
+Key Features
+
+Custom user model with fields like bio, profile_picture, and followers.
+
+Token-based authentication for secure access.
+
+Endpoints for user registration, login, and profile retrieval.
+
+Setup Instructions
+
+Prerequisites
+
+Python 3.8+
+
+PostgreSQL (or your preferred database)
+
+Virtual Environment (recommended)
+
+Installation
+
+Clone the repository:
+
+git clone https://github.com/your-repo/social_media_api.git
+cd social_media_api
+
+Create and activate a virtual environment:
+
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+Install dependencies:
+
+pip install -r requirements.txt
+
+Configure the database in settings.py:
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'your_db_name',
+        'USER': 'your_db_user',
+        'PASSWORD': 'your_db_password',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+
+Run migrations:
+
+python manage.py makemigrations accounts
+python manage.py migrate
+
+Create a superuser:
+
+python manage.py createsuperuser
+
+Start the development server:
+
+python manage.py runserver
+
+User Authentication
+
+User Model Overview
+
+The custom user model (CustomUser) extends AbstractUser and includes the following additional fields:
+
+bio: A text field for the user's bio.
+
+profile_picture: An image field to upload profile pictures.
+
+followers: A ManyToManyField to track followers, referencing the CustomUser model with symmetrical=False.
+
+Token-Based Authentication
+
+Django REST Framework's token authentication is used. Each user is assigned a unique token for secure API access.
+
+API Endpoints
+
+1. Register
+
+URL: POST /accounts/register/
+
+Payload:
+
+{
+    "username": "testuser",
+    "email": "test@example.com",
+    "password": "securepassword"
+}
+
+Response:
+
+{
+    "user": {
+        "id": 1,
+        "username": "testuser",
+        "email": "test@example.com",
+        "bio": "",
+        "profile_picture": null,
+        "followers": [],
+        "following": []
+    },
+    "token": "your_generated_token"
+}
+
+2. Login
+
+URL: POST /accounts/login/
+
+Payload:
+
+{
+    "username": "testuser",
+    "password": "securepassword"
+}
+
+Response:
+
+{
+    "token": "your_generated_token"
+}
+
+3. Profile
+
+URL: GET /accounts/profile/
+
+Headers:
+
+Authorization: Token your_generated_token
+
+Response:
+
+{
+    "id": 1,
+    "username": "testuser",
+    "email": "test@example.com",
+    "bio": "",
+    "profile_picture": null,
+    "followers": [],
+    "following": []
+}
+
+Notes
+
+Ensure that the database is properly configured before running migrations.
+
+Use a tool like Postman or cURL to test the API endpoints.
+
+Extend the API as needed to include additional features like password reset, updating profiles, or managing followers.
+
+Contribution
+
+Feel free to submit issues or create pull requests to improve this project. For major changes, please open an issue first to discuss what you would like to change.
+
+License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
